@@ -1,0 +1,124 @@
+{
+    "docs": [
+        {
+            "location": "/",
+            "text": "Koma\n\n\nA scientific computing library for Kotlin.\n\n\n\n\nOverview\n\n\nThis project aims to:\n\n\n\n\nCreate a scientific programming environment for Kotlin that is familiar to people used to NumPy or\nMATLAB\n\n\nSupport writing numerical code once in Kotlin, and then deploy that code on JVM, JS, and native platforms\n\n\nSupport polyglot usage from Kotlin, Java, other JVM languages, as well as foreign interop with legacy Python or MATLAB code\n\n\nUse pluggable back-ends to offload the actual computation to pre-existing libraries, depending on the target platform\n\n\nUse code already written by other projects where possible to avoid duplication\n\n\n\n\nQuickstart\n\n\nKoma is hosted on bintray. First add it to your repos:\n\n\nrepositories { \n    maven { \n        url \"http://dl.bintray.com/kyonifer/maven\" \n        jcenter()\n    } \n}\n\n\n\n\nNow add a dependency on the \ncore\n artifact:\n\n\ndependencies{\n    compile group: \"koma\", name:\"core\", version:\"0.10\"\n}\n\n\n\n\nAnd we're ready to go. Lets plot a random walk:\n\n\nimport koma.*\n\nfun main(args: Array<String>)\n{\n\n    // Create some normal random noise\n    var a = randn(100,2)\n    var b = cumsum(a)\n\n    figure(1)\n    // Second parameter is color\n    plot(a, 'b', \"First Run\")\n    plot(a+1, 'y', \"First Run Offset\")\n    xlabel(\"Time (s)\")\n    ylabel(\"Magnitude\")\n    title(\"White Noise\")\n\n    figure(2)\n    plot(b, 'g') // green\n    xlabel(\"Velocity (lightweeks/minute)\")\n    ylabel(\"Intelligence\")\n    title(\"Random Walk\")\n\n}\n\n\n\n\n\n\nThe Next Step\n\n\nThe \ncore\n artifact uses an unoptimized backend by default. Check out \nthe backends page\n \nto find a better backend on your target platform.",
+            "title": "Home"
+        },
+        {
+            "location": "/#koma",
+            "text": "A scientific computing library for Kotlin.",
+            "title": "Koma"
+        },
+        {
+            "location": "/#overview",
+            "text": "This project aims to:   Create a scientific programming environment for Kotlin that is familiar to people used to NumPy or\nMATLAB  Support writing numerical code once in Kotlin, and then deploy that code on JVM, JS, and native platforms  Support polyglot usage from Kotlin, Java, other JVM languages, as well as foreign interop with legacy Python or MATLAB code  Use pluggable back-ends to offload the actual computation to pre-existing libraries, depending on the target platform  Use code already written by other projects where possible to avoid duplication",
+            "title": "Overview"
+        },
+        {
+            "location": "/#quickstart",
+            "text": "Koma is hosted on bintray. First add it to your repos:  repositories { \n    maven { \n        url \"http://dl.bintray.com/kyonifer/maven\" \n        jcenter()\n    } \n}  Now add a dependency on the  core  artifact:  dependencies{\n    compile group: \"koma\", name:\"core\", version:\"0.10\"\n}  And we're ready to go. Lets plot a random walk:  import koma.*\n\nfun main(args: Array<String>)\n{\n\n    // Create some normal random noise\n    var a = randn(100,2)\n    var b = cumsum(a)\n\n    figure(1)\n    // Second parameter is color\n    plot(a, 'b', \"First Run\")\n    plot(a+1, 'y', \"First Run Offset\")\n    xlabel(\"Time (s)\")\n    ylabel(\"Magnitude\")\n    title(\"White Noise\")\n\n    figure(2)\n    plot(b, 'g') // green\n    xlabel(\"Velocity (lightweeks/minute)\")\n    ylabel(\"Intelligence\")\n    title(\"Random Walk\")\n\n}",
+            "title": "Quickstart"
+        },
+        {
+            "location": "/#the-next-step",
+            "text": "The  core  artifact uses an unoptimized backend by default. Check out  the backends page  \nto find a better backend on your target platform.",
+            "title": "The Next Step"
+        },
+        {
+            "location": "/guide/backends/",
+            "text": "Available Backends\n\n\nThe core koma artifact contains a unoptimized default implementation of the ND and Matrix \ncontainers. In the interest of not reinventing the wheel, the default implementation doesnt \nimplement many of the advanced matrix functionalities, such as decompositions. For a complete\nimplementation of the matrix interface, you'll want to select an optimized backend available \non your target platform. Currently optimized backends are only available for the JVM, with \nmore on the way for JS and Native soon:\n\n\n\n\n\n\n\n\nArtifact\n\n\nSupported Platforms\n\n\nImplemented Interfaces\n\n\nRelevant Classes\n\n\n\n\n\n\n\n\n\n\ncore\n\n\nJVM, JS, Native\n\n\nMatrix<T>\n*, \nNDArray<T>\n, \nNumericalNDArray<T>\n\n\nDefaultNDArray<T>\n, \nDefaultDoubleNDArray\n, \nDefaultFloatNDArray\n, \nDefaultIntNDArray\n\n\n\n\n\n\nbackend-matrix-mtj\n\n\nJVM\n\n\nMatrix<Double>\n\n\nMTJMatrix\n\n\n\n\n\n\nbackend-matrix-ejml\n\n\nJVM\n\n\nMatrix<Double>\n\n\nEJMLMatrix\n\n\n\n\n\n\nbackend-matrix-jblas\n\n\nJVM\n\n\nMatrix<Double>\n\n\nJBlasMatrix\n\n\n\n\n\n\n\n\n* Only contains support for basic functionality like additions or multiplications. Please use \nan optimized backend for advanced features like matrix decompositions.\n\n\nMultiple Backends at Once\n\n\nKoma supports using multiple backends simultaneously. This is useful if e.g.\nyou need to work with multiple libraries which require different matrix containers. \n\n\nYou can change the backend being used by koma's top-level functions at\nany time by setting a property in the koma namespace. In Kotlin this looks\nlike:\n\n\nimport koma.matrix.ejml.EJMLMatrixFactory\n...\n\n// Make subsequent function calls use the EJML backend\nkoma.factory = EJMLMatrixFactory()\n\nval a = zeros(3,3) // An EJMLMatrix\n\n// Make subsequent function calls use the MTJ backend\n// (doesnt affect previous returns)\nkoma.factory = MTJMatrixFactory()\n\nval b = zeros(3,3) // Now returns an MTJMatrix\n\n\n\n\nThis property can be set from Java and other languages via\n\nkoma.Options.setFactory(...)\n. If not set, koma will default\nto using MTJ, EJML, and then JBlas in that order.\n\n\nIt is also possible to create any matrix type manually by using the\ncorresponding factory. For example, even if \nkoma.factory\n is set to\nMTJMatrixFactory, you could write\n\n\nval eFac = EJMLMatrixFactory()\nval a = eFac.eye(3, 3)\nval b = eFac.ones(3, 3)\nprintln(a+b) // Uses EJML's addition algorithm, not MTJ's\n\n\n\n\nThis makes it easy to use libraries requiring different matrix\ncontainers simultaneously.",
+            "title": "Backends"
+        },
+        {
+            "location": "/guide/backends/#available-backends",
+            "text": "The core koma artifact contains a unoptimized default implementation of the ND and Matrix \ncontainers. In the interest of not reinventing the wheel, the default implementation doesnt \nimplement many of the advanced matrix functionalities, such as decompositions. For a complete\nimplementation of the matrix interface, you'll want to select an optimized backend available \non your target platform. Currently optimized backends are only available for the JVM, with \nmore on the way for JS and Native soon:     Artifact  Supported Platforms  Implemented Interfaces  Relevant Classes      core  JVM, JS, Native  Matrix<T> *,  NDArray<T> ,  NumericalNDArray<T>  DefaultNDArray<T> ,  DefaultDoubleNDArray ,  DefaultFloatNDArray ,  DefaultIntNDArray    backend-matrix-mtj  JVM  Matrix<Double>  MTJMatrix    backend-matrix-ejml  JVM  Matrix<Double>  EJMLMatrix    backend-matrix-jblas  JVM  Matrix<Double>  JBlasMatrix     * Only contains support for basic functionality like additions or multiplications. Please use \nan optimized backend for advanced features like matrix decompositions.",
+            "title": "Available Backends"
+        },
+        {
+            "location": "/guide/backends/#multiple-backends-at-once",
+            "text": "Koma supports using multiple backends simultaneously. This is useful if e.g.\nyou need to work with multiple libraries which require different matrix containers.   You can change the backend being used by koma's top-level functions at\nany time by setting a property in the koma namespace. In Kotlin this looks\nlike:  import koma.matrix.ejml.EJMLMatrixFactory\n...\n\n// Make subsequent function calls use the EJML backend\nkoma.factory = EJMLMatrixFactory()\n\nval a = zeros(3,3) // An EJMLMatrix\n\n// Make subsequent function calls use the MTJ backend\n// (doesnt affect previous returns)\nkoma.factory = MTJMatrixFactory()\n\nval b = zeros(3,3) // Now returns an MTJMatrix  This property can be set from Java and other languages via koma.Options.setFactory(...) . If not set, koma will default\nto using MTJ, EJML, and then JBlas in that order.  It is also possible to create any matrix type manually by using the\ncorresponding factory. For example, even if  koma.factory  is set to\nMTJMatrixFactory, you could write  val eFac = EJMLMatrixFactory()\nval a = eFac.eye(3, 3)\nval b = eFac.ones(3, 3)\nprintln(a+b) // Uses EJML's addition algorithm, not MTJ's  This makes it easy to use libraries requiring different matrix\ncontainers simultaneously.",
+            "title": "Multiple Backends at Once"
+        },
+        {
+            "location": "/guide/linalg/",
+            "text": "Matrices\n\n\nKoma's \nMatrix<T>\n type is a 2D container designed to be used for linear algebra.\n\n\nCreating Matrices\n\n\nWhile it is always possible to use the \n*Factory\n classes provided by your chosen backend directly,\nKoma provides a set of top-level convenience functions to easily create new matrices. For example:\n\n\n// x is a 3x3 identity matrix\nvar x = eye(3)\n\n// x is a 3x3 with Gaussian random noise, distribution 0,1\nx = randn(3,3)\n\n// x is a 3x3 with uniform random noise\nx = rand(3,3)\n\n// x is a 4x5 matrix where the ith row and jth column has the value i+j*2\nx = fill(4,5) { row, col -> row+col*2 }\n\nval someData = doubleArrayOf(doubleArrayOf(1,2,3),\n                             doubleArrayOf(4,5,6))\n// x is a 2x3 matrix constructed from the data in a java array of arrays\nx = create(someData)\n\n\n\n\nSee \nhere\n for a complete list of\navailable creators. There is also a DSL for matrix literals:\n\n\n// a is a 2x3 matrix filled with the numbers passed in\nval a = mat[1,2,3.3 end\n            4,5,6]\n\n\n\n\nMath Functions\n\n\nMatrices have useful map functions that return matrices for chaining operations (see \nhere\n for a complete list).\n\n\n    // Create a 3x3 identity and then add 0.1 to all elements\n    val x = eye(3) + 0.1\n\n    // Map each element through a function that adds .01\n    val y = x.mapMat { it + .01 }\n\n    // Map each element through a function that adds or subtracts depending on the element index\n    val z = x.mapMatIndexed { row, col, ele -> if (row > col) ele + 1 else ele - 1 }\n\n    // Are there any elements greater than 1?\n    val hasGreater = x.any { it > 1 }\n\n    // Are all elements greater than 1?\n    val allGreater = x.all { it > 1 }\n\n    // Apply a function to a row at a time and store the outputs in a contiguous matrix\n    val sins = x.mapRows { row -> sin(row) }\n\n    // Print all elements greater than 1\n    x.each { if (it>1) println(it) }\n\n\n\n\n\nWe can also do some linear algebra:\n\n\n\n    // Matrix literal syntax, see creators.kt for \n    // convenience functions like zeros(5,5)\n    var A = mat[1,0,0 end\n                0,3,0 end\n                0,0,4]\n\n    // Calculate the matrix inverse\n    var Ainv = A.inv()\n\n    var b = mat[2,2,4].T\n\n    // Use overloaded operators:\n\n    // * is matrix multiplication \n    var c = A*b + 1\n\n    // emul is element-wise multiplication\n    var d = (A emul A) + 1\n\n    // Number of decimals to show\n    format(\"short\")\n\n    println(c)\n\n\n\n\n\nWhich produces:\n\n\nOutput:\n\nmat[ 3.00  end\n     7.00  end\n     17.00 ]\n\n\n\n\nMany special functions are supported (see \nthe matrix interface\n for a complete list):\n\n\n\n    val a = 2*eye(3)+.01 // eye is identity matrix\n\n    a.chol()  // Cholesky decomposition\n    a.det()   // Determinant\n    a.diag()  // Diagonal vector\n    a.inv()   // Matrix inverse\n    a.norm()  // Matrix norm\n\n\n\n\n\nScalar functions can be applied elementwise to matrices (see \nhere\n for a complete list):\n\n\n    val x = create(0..100)/5.0  // Matrix of 0, 1/5, 2/5, ...\n    val y = sin(x)              // Sin applied elementwise\n    plot(y)                     // Plot of sin function\n\n\n\n\nMatrix indexing and slicing is supported (see \nhere\n for a list of operators as well as the Matrix\n type):\n\n\n\n    val x = randn(5,5)\n    val y = x[0,0..4] // Grab the first row\n\n    x[0..2,0..3] = zeros(3,4) // Set the upper-left 3x4 sub-matrix of x to zero\n\n\n\n\n\nA Matrix is convertible to an Iterable:\n\n\n    val x = randn(5,5).toIterable()\n\n    // Adds all elements and returns sum\n    x.reduce { x, y -> x+y }\n\n    // Returns list of all elements greater than 4\n    x.find { it > 4 }",
+            "title": "Linear Algebra"
+        },
+        {
+            "location": "/guide/linalg/#matrices",
+            "text": "Koma's  Matrix<T>  type is a 2D container designed to be used for linear algebra.",
+            "title": "Matrices"
+        },
+        {
+            "location": "/guide/linalg/#creating-matrices",
+            "text": "While it is always possible to use the  *Factory  classes provided by your chosen backend directly,\nKoma provides a set of top-level convenience functions to easily create new matrices. For example:  // x is a 3x3 identity matrix\nvar x = eye(3)\n\n// x is a 3x3 with Gaussian random noise, distribution 0,1\nx = randn(3,3)\n\n// x is a 3x3 with uniform random noise\nx = rand(3,3)\n\n// x is a 4x5 matrix where the ith row and jth column has the value i+j*2\nx = fill(4,5) { row, col -> row+col*2 }\n\nval someData = doubleArrayOf(doubleArrayOf(1,2,3),\n                             doubleArrayOf(4,5,6))\n// x is a 2x3 matrix constructed from the data in a java array of arrays\nx = create(someData)  See  here  for a complete list of\navailable creators. There is also a DSL for matrix literals:  // a is a 2x3 matrix filled with the numbers passed in\nval a = mat[1,2,3.3 end\n            4,5,6]",
+            "title": "Creating Matrices"
+        },
+        {
+            "location": "/guide/linalg/#math-functions",
+            "text": "Matrices have useful map functions that return matrices for chaining operations (see  here  for a complete list).      // Create a 3x3 identity and then add 0.1 to all elements\n    val x = eye(3) + 0.1\n\n    // Map each element through a function that adds .01\n    val y = x.mapMat { it + .01 }\n\n    // Map each element through a function that adds or subtracts depending on the element index\n    val z = x.mapMatIndexed { row, col, ele -> if (row > col) ele + 1 else ele - 1 }\n\n    // Are there any elements greater than 1?\n    val hasGreater = x.any { it > 1 }\n\n    // Are all elements greater than 1?\n    val allGreater = x.all { it > 1 }\n\n    // Apply a function to a row at a time and store the outputs in a contiguous matrix\n    val sins = x.mapRows { row -> sin(row) }\n\n    // Print all elements greater than 1\n    x.each { if (it>1) println(it) }  We can also do some linear algebra:  \n    // Matrix literal syntax, see creators.kt for \n    // convenience functions like zeros(5,5)\n    var A = mat[1,0,0 end\n                0,3,0 end\n                0,0,4]\n\n    // Calculate the matrix inverse\n    var Ainv = A.inv()\n\n    var b = mat[2,2,4].T\n\n    // Use overloaded operators:\n\n    // * is matrix multiplication \n    var c = A*b + 1\n\n    // emul is element-wise multiplication\n    var d = (A emul A) + 1\n\n    // Number of decimals to show\n    format(\"short\")\n\n    println(c)  Which produces:  Output:\n\nmat[ 3.00  end\n     7.00  end\n     17.00 ]  Many special functions are supported (see  the matrix interface  for a complete list):  \n    val a = 2*eye(3)+.01 // eye is identity matrix\n\n    a.chol()  // Cholesky decomposition\n    a.det()   // Determinant\n    a.diag()  // Diagonal vector\n    a.inv()   // Matrix inverse\n    a.norm()  // Matrix norm  Scalar functions can be applied elementwise to matrices (see  here  for a complete list):      val x = create(0..100)/5.0  // Matrix of 0, 1/5, 2/5, ...\n    val y = sin(x)              // Sin applied elementwise\n    plot(y)                     // Plot of sin function  Matrix indexing and slicing is supported (see  here  for a list of operators as well as the Matrix  type):  \n    val x = randn(5,5)\n    val y = x[0,0..4] // Grab the first row\n\n    x[0..2,0..3] = zeros(3,4) // Set the upper-left 3x4 sub-matrix of x to zero  A Matrix is convertible to an Iterable:      val x = randn(5,5).toIterable()\n\n    // Adds all elements and returns sum\n    x.reduce { x, y -> x+y }\n\n    // Returns list of all elements greater than 4\n    x.find { it > 4 }",
+            "title": "Math Functions"
+        },
+        {
+            "location": "/guide/ndims/",
+            "text": "N-D Containers\n\n\nTODO: Explain \nNDArray, NumericalNDArray\n\n\nNDArray\n\n\nNumericalNDArray",
+            "title": "N-Dimensional Containers"
+        },
+        {
+            "location": "/guide/ndims/#n-d-containers",
+            "text": "TODO: Explain  NDArray, NumericalNDArray",
+            "title": "N-D Containers"
+        },
+        {
+            "location": "/guide/ndims/#ndarray",
+            "text": "",
+            "title": "NDArray"
+        },
+        {
+            "location": "/guide/ndims/#numericalndarray",
+            "text": "",
+            "title": "NumericalNDArray"
+        },
+        {
+            "location": "/guide/plotting/",
+            "text": "Plotting\n\n\nTODO: Explain plotting",
+            "title": "Plotting"
+        },
+        {
+            "location": "/guide/plotting/#plotting",
+            "text": "TODO: Explain plotting",
+            "title": "Plotting"
+        },
+        {
+            "location": "/advanced/generics/",
+            "text": "",
+            "title": "Generics & Boxing"
+        },
+        {
+            "location": "/advanced/source/",
+            "text": "Building Koma from Source\n\n\nPrerequisites\n\n\nBuilding Koma from source requires:\n\n\n\n\nA JDK targeting Java 8 on the system path\n\n\ngit\n\n\n\n\nBuilding\n\n\nGrab a copy of the latest Koma code and enter the checked out directory:\n\n\ngit clone https://github.com/kyonifer/koma.git\ncd koma\n\n\n\n\nNow run the gradle build command, passing in a parameter specifying which platform you\nare building for:\n\n\n./gradlew build -Ptarget=kotlin\n\n\n\n\n./gradlew build -Ptarget=js\n\n\n\n\n./gradlew build -Ptarget=native\n\n\n\n\nYou can now run the example on the platform you chose:\n\n\nnode examples/js/example.js\n\n\n\n\n./Koma.kexe",
+            "title": "Build From Source"
+        },
+        {
+            "location": "/advanced/source/#building-koma-from-source",
+            "text": "",
+            "title": "Building Koma from Source"
+        },
+        {
+            "location": "/advanced/source/#prerequisites",
+            "text": "Building Koma from source requires:   A JDK targeting Java 8 on the system path  git",
+            "title": "Prerequisites"
+        },
+        {
+            "location": "/advanced/source/#building",
+            "text": "Grab a copy of the latest Koma code and enter the checked out directory:  git clone https://github.com/kyonifer/koma.git\ncd koma  Now run the gradle build command, passing in a parameter specifying which platform you\nare building for:  ./gradlew build -Ptarget=kotlin  ./gradlew build -Ptarget=js  ./gradlew build -Ptarget=native  You can now run the example on the platform you chose:  node examples/js/example.js  ./Koma.kexe",
+            "title": "Building"
+        },
+        {
+            "location": "/advanced/contributing/",
+            "text": "",
+            "title": "Contributing"
+        }
+    ]
+}
